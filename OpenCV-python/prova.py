@@ -38,6 +38,7 @@ def avvioFrameVideo(filename):
         # (il percorso da analizzare della macchina e fornire una distanza...FPS???)
         print("Apro il video")
         cap = cv.VideoCapture(filename)
+        global subFrame
         subFrame = videoUtil.video_util_frame(parent=video_frame, vs=cap, controller=status)
         subFrame.pack()
     else:
@@ -47,8 +48,10 @@ def toggleVideoPlayback():
     if status.get_file_is_set() == 1:
         if status.video_state == 0:    # se è in pausa play
             status.set_video_state(1)
+            subFrame.toggle_stopEvent()
         else:
             status.set_video_state(0) # metto in pausa
+            subFrame.toggle_stopEvent()
 
 
 # impostazioni base della finastra principale

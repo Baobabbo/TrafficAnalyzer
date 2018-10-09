@@ -30,6 +30,8 @@ class video_util_frame (tk.Frame):
         # the most recently read frame
 
         self.stopEvent = threading.Event()
+        # avvio il frame in modalità pausa appena inizializzato
+        self.stopEvent.set()
         print(self.stopEvent)
         self.thread = threading.Thread(target=self.videoLoop, args=())
         self.thread.start()
@@ -48,37 +50,44 @@ class video_util_frame (tk.Frame):
         # a RunTime error that Tkinter throws due to threading
         try:
             # keep looping over frames until we are instructed to stop
-            while not self.stopEvent.is_set():
-                # self.pausaRiproduzione()    #si mette subito in pausa da solo
-                # grab the frame from the video stream and resize it to
-                # have a maximum width of 300 pixels
-                self.ret, self.frame = self.vs.read()
-                #self.frame = imutils.resize(self.frame, width=500)
+            while 1:
+                while not self.stopEvent.is_set():
+                    # self.pausaRiproduzione()    #si mette subito in pausa da solo
+                    # grab the frame from the video stream and resize it to
+                    # have a maximum width of 300 pixels
+                    self.ret, self.frame = self.vs.read()
+                    #self.frame = imutils.resize(self.frame, width=500)
 
-                # OpenCV represents images in BGR order; however PIL
-                # represents images in RGB order, so we need to swap
-                # the channels, then convert to PIL and ImageTk format
+                    # OpenCV represents images in BGR order; however PIL
+                    # represents images in RGB order, so we need to swap
+                    # the channels, then convert to PIL and ImageTk format
 
-                rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
-                rgbImg = cv2.resize(rgbImg,(906,509),interpolation=cv2.INTER_AREA)
-                rgbImg = Image.fromarray(rgbImg)
-                rgbImg = ImageTk.PhotoImage(rgbImg)
+                    rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+                    rgbImg = cv2.resize(rgbImg,(906,509),interpolation=cv2.INTER_AREA)
+                    rgbImg = Image.fromarray(rgbImg)
+                    rgbImg = ImageTk.PhotoImage(rgbImg)
 
-                # if the panel is not None, we need to initialize it
-                if self.panel is None:
-                    self.panel = tk.Label(self.parent,image=rgbImg)
-                    self.panel.image = rgbImg
+                    # if the panel is not None, we need to initialize it
+                    if self.panel is None:
+                        self.panel = tk.Label(self.parent,image=rgbImg)
+                        self.panel.image = rgbImg
 
-                    self.panel.bind("<Button-1>", self.callback)
-                    self.panel.pack(side="left", padx=10, pady=10)
-                    time.sleep(1/self.fps)
-                # otherwise, simply update the panel
-                else:
-                    self.panel.configure(image=rgbImg)
-                    self.panel.image = rgbImg
-                    time.sleep(1 / self.fps)
+                        self.panel.bind("<Button-1>", self.callback)
+                        self.panel.pack(side="left", padx=10, pady=10)
+                        time.sleep(1/self.fps)
+                    # otherwise, simply update the panel
+                    else:
+                        self.panel.configure(image=rgbImg)
+                        self.panel.image = rgbImg
+                        time.sleep(1 / self.fps)
         except RuntimeError:
-            print("caught a RunTime Error")
+             print("caught a RunTime Error")
+    def toggle_stopEvent(self):
+        if self.stopEvent.is_set():
+            self.stopEvent.clear()
+            print(self.stopEvent)
+        else:
+            self.stopEvent.set()
 
     def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
         # initialize the dimensions of the image to be resized and
