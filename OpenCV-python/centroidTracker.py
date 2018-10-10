@@ -1,3 +1,4 @@
+# import the necessary packages
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
@@ -83,7 +84,7 @@ class CentroidTracker():
             # in order to perform this matching we must (1) find the
             # smallest value in each row and then (2) sort the row
             # indexes based on their minimum values so that the row
-            # with the smallest value is at the *front* of the index
+            # with the smallest value as at the *front* of the index
             # list
             rows = D.min(axis=1).argsort()
 
@@ -118,6 +119,7 @@ class CentroidTracker():
                 # column indexes, respectively
                 usedRows.add(row)
                 usedCols.add(col)
+
             # compute both the row and column index we have NOT yet
             # examined
             unusedRows = set(range(0, D.shape[0])).difference(usedRows)
@@ -141,12 +143,12 @@ class CentroidTracker():
                     if self.disappeared[objectID] > self.maxDisappeared:
                         self.deregister(objectID)
 
-                    # otherwise, if the number of input centroids is greater
-                    # than the number of existing object centroids we need to
-                    # register each new input centroid as a trackable object
-                    else:
-                        for col in unusedCols:
-                            self.register(inputCentroids[col])
-            # return the set of trackable objects
-            return self.objects
-        
+            # otherwise, if the number of input centroids is greater
+            # than the number of existing object centroids we need to
+            # register each new input centroid as a trackable object
+            else:
+                for col in unusedCols:
+                    self.register(inputCentroids[col])
+
+        # return the set of trackable objects
+        return self.objects

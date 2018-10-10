@@ -115,16 +115,11 @@ def detect_common_objects(image, veicoli):
                 print(class_id)
                 confidences.append(float(confidence))
                 boxes.append([x, y, w, h])
-                if class_id is 2:   # nel caso in cui ho detectato una macchina
-                    if vehicles is None:
-                        vehicles.append(Car())
-                        vehicles[0].setCarID(1)
-                        vehicles[0].incNumFrames()
-                        # crop immagine e aggiunta all'array delle img della macchina
-                    else:
-                        lunghezza = len(vehicles)
-                        # controlla i fotogrammi di tutte le macchine dentro la lista e vedi se c'è una auto corrispondente
-                        # TODO create a method to recognise the same object
+                if class_id == 2:   # nel caso in cui ho detectato una macchina
+                    # allora ---> performTracking
+                    print("[INFO] Ho individuatao un obj macchina: eseguo il tracking")
+                    # aggiungo un elemento al vettore vehichles
+                    vehicles.append([center_x,center_y])
 
     indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold, nms_threshold)
 
@@ -144,4 +139,4 @@ def detect_common_objects(image, veicoli):
         label.append(str(classes[class_ids[i]]))
         conf.append(confidences[i])
 
-    return bbox, label, conf
+    return bbox, label, conf, vehicles
